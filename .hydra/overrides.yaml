@@ -1,0 +1,8 @@
+- eval_task=packing-boxes-pairs-unseen-colors
+- agent=cliport
+- mode=test
+- n_demos=100
+- train_demos=1000
+- checkpoint_type=test_best
+- type=single
+- exp_folder=exps_2
