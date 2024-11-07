@@ -1,14 +1,15 @@
 # CLIPort 기반의 2-fingered gripper 물체 조작 시뮬레이터
+# CLIPort-based 2-fingered gripper object manipulation simulator
 
-## 베이스라인 모델:
+## Baseline:
 
 [**CLIPort: What and Where Pathways for Robotic Manipulation**](https://arxiv.org/pdf/2109.12098.pdf)  
 [Mohit Shridhar](https://mohitshridhar.com/), [Lucas Manuelli](http://lucasmanuelli.com/), [Dieter Fox](https://homes.cs.washington.edu/~fox/)  
 [CoRL 2021](https://www.robot-learning.org/)
 
-## 환경 설정
+## Environment setting
 
-가상 환경 설정 및 파이썬 패키지 설치:
+virtual environment settings and installing python pakages:
 
 ```bash
 # setup virtualenv with whichever package manager you prefer
@@ -23,7 +24,7 @@ export CLIPORT_ROOT=$(pwd)
 python setup.py develop
 ```
 
-### Google 물체 다운로드
+### Google object download
 
 ```bash
 sh scripts/google_objects_download.sh
@@ -31,18 +32,18 @@ sh scripts/google_objects_download.sh
 
 Credit: [Google](#acknowledgements).
 
-## 학습과 평가
+## Training and Evaluation
 
-1. `demos.py` 파일로 `train`, `val`, `test` 데이터셋 생성
-2. `train.py`로 모델 학습
-3. `eval.py`을 실행하여 'val' 데이터셋에 대해 가장 좋은 가중치를 획득 (`*val-results.json`에 저장됨)
-4. 'test' 데이터셋에 대해 `eval.py`을 실행하여 평가
+1. Generate `train`, `val`, `test` dataset by 'demos.py'
+2. Train by `train.py`
+3. `eval.py` to obtain best checkpoint via 'val' dataset (save in `*val-results.json`)
+4. Evaluate on 'test' dataset by running `eval.py`
 
-### 데이터셋 생성
+### Dataset generation
 
-#### 단일 작업
+#### single task
 
-1000개의 `train` 데이터셋을 `stack-block-pyramid-seq-seen-colors` 작업에 대해 만든다고 할 때, `$CLIPORT_ROOT/data_2fingered`에 저장됨:
+Train model on 1000 demos of `train` dataset with `stack-block-pyramid-seq-seen-colors` task (saved in `$CLIPORT_ROOT/data_2fingered`):
 
 ```bash
 python cliport/demos.py n=1000 \
@@ -50,17 +51,17 @@ python cliport/demos.py n=1000 \
                         mode=train
 ```
 
-#### 전체 데이터셋
+#### Generate whole tasks
 
 ```bash
 sh scripts/generate_dataset_2fingered.sh data
 ```
 
-### 단일 작업 학습 및 평가
+### Single task training and evaluation
 
-#### 학습
+#### Train
 
-`stack-block-pyramid-seq-seen-colors` 작업에 대해 1000개의 데이터셋을 200k iteration으로 학습:
+Train `stack-block-pyramid-seq-seen-colors` task on 1000 demos with 200k iteration:
 
 ```bash
 python cliport/train.py train.task=stack-block-pyramid-seq-seen-colors \
@@ -74,9 +75,9 @@ python cliport/train.py train.task=stack-block-pyramid-seq-seen-colors \
                         dataset.cache=False
 ```
 
-#### 검증
+#### Validation
 
-validation 데이터셋에 대해 모든 가중치를 평가하고 `exps/<task>-train/checkpoints/<task>-val-results.json`에 결과 저장:
+Evaluate on 'val' dataset by saving the result in `exps/<task>-train/checkpoints/<task>-val-results.json`:
 
 ```bash
 python cliport/eval.py eval_task=stack-block-pyramid-seq-seen-colors \
@@ -88,9 +89,9 @@ python cliport/eval.py eval_task=stack-block-pyramid-seq-seen-colors \
                        exp_folder=exps
 ```
 
-#### 평가
+#### Evaluation
 
-test 데이터셋에 대해 가장 좋은 성능을 보인 가중치를 평가하고 `exps/<task>-train/checkpoints/<task>-test-results.json`에 결과 저장:
+Evaluate on 'test' dataset with best checkpoint (results saved in `exps/<task>-train/checkpoints/<task>-test-results.json`):
 
 ```bash
 python cliport/eval.py eval_task=stack-block-pyramid-seq-seen-colors \
@@ -102,11 +103,11 @@ python cliport/eval.py eval_task=stack-block-pyramid-seq-seen-colors \
                        exp_folder=exps
 ```
 
-### 여러 개의 작업 학습 및 평가
+### Multi-task training and evaluation
 
-#### 학습
+#### Train
 
-`task=multi-language-conditioned`, `task=multi-attr-packing-box-pairs-unseen-colors` 등을 설정
+Set `task=multi-language-conditioned`, `task=multi-attr-packing-box-pairs-unseen-colors`
 
 ```bash
 python cliport/train.py train.task=multi-language-conditioned \
@@ -121,7 +122,7 @@ python cliport/train.py train.task=multi-language-conditioned \
                         dataset.type=multi
 ```
 
-#### 검증
+#### Validation
 
 ```bash
 python cliport/eval.py model_task=multi-language-conditioned \
@@ -135,7 +136,7 @@ python cliport/eval.py model_task=multi-language-conditioned \
                        exp_folder=exps
 ```
 
-#### 평가
+#### Evaluation
 
 ```bash
 python cliport/eval.py model_task=multi-language-conditioned \
@@ -149,9 +150,9 @@ python cliport/eval.py model_task=multi-language-conditioned \
                        exp_folder=exps
 ```
 
-## 비디오 저장
+## Saving video
 
-`record.save_video=True`를 설정하여 비디오 저장 가능 (시간 오래 걸림):
+By setting `record.save_video=True`: (This takes a lot of time)
 
 ```bash
 python cliport/eval.py model_task=multi-language-conditioned \
@@ -167,5 +168,4 @@ python cliport/eval.py model_task=multi-language-conditioned \
                        record.save_video=True
 ```
 
-`${model_dir}/${exp_folder}/${eval_task}-${agent}-n${train_demos}-train/videos/`에 저장
-# cliport-robotiq
+Saved in `${model_dir}/${exp_folder}/${eval_task}-${agent}-n${train_demos}-train/videos/`
