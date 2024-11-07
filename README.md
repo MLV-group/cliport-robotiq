@@ -1,4 +1,3 @@
-# CLIPort 기반의 2-fingered gripper 물체 조작 시뮬레이터
 # CLIPort-based 2-fingered gripper object manipulation simulator
 
 ## Baseline:
